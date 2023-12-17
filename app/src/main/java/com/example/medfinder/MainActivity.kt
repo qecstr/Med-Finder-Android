@@ -1,7 +1,6 @@
 package com.example.medfinder
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
@@ -28,15 +27,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.medfinder.model.Meds
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.medfinder.model.MedObject
-import com.example.medfinder.network.MedsApi
-import com.example.medfinder.network.MedsApiService
 import com.example.medfinder.ui.Screens.MedsUiState
 import com.example.medfinder.ui.Screens.MedsViewModel
 import com.example.medfinder.ui.theme.MedFinderTheme
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,7 +41,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val marsViewModel: MedsViewModel = viewModel()
+                  val marsViewModel: MedsViewModel = viewModel()
                     HomeScreen(medsUiState = marsViewModel.medsUiState)
                 }
             }
@@ -56,26 +49,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-fun getMeds() {
-    val apiInterface = MedsApi.client.create(MedsApiService::class.java)
-
-    val call = apiInterface.getMeds()
-
-    call.enqueue(object : Callback<MedObject> {
-        override fun onResponse(call: Call<MedObject>, response: Response<MedObject>) {
-            Log.d("Success!", response.toString())
-            var text = response.body()
-            val bookList = text?.values
-
-
-        }
-
-        override fun onFailure(call: Call<MedObject>, t: Throwable)                  {
-            Log.e("Failed Query :(", t.toString())
-
-        }
-    })
-}
 
 @Composable
 fun MedItem(
@@ -121,17 +94,22 @@ fun MedFinder(name: String, modifier: Modifier = Modifier) {
     }
 @Composable
 fun HomeScreen(
-    medsUiState: MedsUiState, modifier: Modifier = Modifier
-) {
-  Text(text = medsUiState.toString())
-}
+  medsUiState: MedsUiState, modifier: Modifier = Modifier
+) { when (medsUiState) {
+    is MedsUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxSize())
+    is MedsUiState.Success -> ResultScreen(
+    medsUiState.meds, modifier = modifier.fillMaxWidth()
+    )
+
+    is MedsUiState.Error -> ErrorScreen(  modifier = modifier.fillMaxSize())
+}}
 @Composable
-fun ResultScreen(meds: Meds?, modifier: Modifier = Modifier) {
+fun ResultScreen(meds: ArrayList<Meds>, modifier: Modifier = Modifier) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
     ) {
-        Text(text = meds.toString())
+        Text(text = meds[0].MedName.toString())
     }
 }
 @Composable
@@ -141,13 +119,14 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
 @Composable
 fun ErrorScreen(modifier: Modifier = Modifier) {
 
-        Text(text = "error")
+        Text(text =" errro")
     }
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     MedFinderTheme {
-        MedFinder("Android")
+        val marsViewModel: MedsViewModel = viewModel()
+        HomeScreen(medsUiState = marsViewModel.medsUiState)
     }
 }

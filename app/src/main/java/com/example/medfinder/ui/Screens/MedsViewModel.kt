@@ -7,53 +7,62 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.medfinder.model.MedObject
+import androidx.lifecycle.viewModelScope
 import com.example.medfinder.model.Meds
+import com.example.medfinder.network.DefaultAppContainer
 import com.example.medfinder.network.MedsApi
-import com.example.medfinder.network.MedsApiService
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-
+import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.io.IOException
+private val KEY = "AIzaSyAsXkF_dIpWcaVhoiZUtxth6tzjU9pSuPQ"
+private val spreadSheetID = "1VEA_bLxt76K2t3b_fnXqcQcAlIGtKpbFUzhs4OkmMy4"
 sealed interface MedsUiState {
-    data class Success(val Med: ArrayList<Meds>?) : MedsUiState
+    data class Success(val meds:ArrayList<Meds>) : MedsUiState
     object Error : MedsUiState
     object Loading :MedsUiState
 }
 class MedsViewModel : ViewModel() {
-    /** The mutable State that stores the status of the most recent request */
     var medsUiState: MedsUiState by mutableStateOf(MedsUiState.Loading)
-
         private set
 
-    /**
-     * Call getMarsPhotos() on init so we can display status immediately.
-     */
+
     init {
         getMeds()
     }
 
-    /**
-     * Gets Mars photos information from the Mars API
-     */
+
     fun getMeds() {
-       val apiInterface = MedsApi.client.create(MedsApiService::class.java)
+        viewModelScope.launch {
+            medsUiState = MedsUiState.Loading
+            val listResult = MedsApi.retrofitService.getValues().values
+            var q = ArrayList<Meds>()
 
-        val call = apiInterface.getMeds()
-
-        call.enqueue(object : Callback<MedObject> {
-            override fun onResponse(call: Call<MedObject>, response: Response<MedObject>) {
-                Log.d("Success!", response.toString())
-                var text = response.body()
-                val bookList = text?.values
-                medsUiState = MedsUiState.Success(bookList)
+            for (items in listResult) {
+                items.map { m ->
+                   q.add( Meds(
+                        MedName = m,
+                        MedPrice = m,
+                        MedApteka = m,
+                        MedAddress = m,
+                        MedRecept = m,
+                        MedAnalogue = m,
+                        MedCategory = m,
+                        MedId = m,
+                    ))
+                }
             }
+            medsUiState = try {
+                MedsUiState.Success(q)
+            }catch (e: HttpException){
+                    MedsUiState.Error
 
-            override fun onFailure(call: Call<MedObject>, t: Throwable)                  {
-                Log.e("Failed Query :(", t.toString())
+            }catch(e: IOException){
+                    MedsUiState.Error
+             }
 
-            }
-        })
+        }
+
     }
-    }
+}
+
 
