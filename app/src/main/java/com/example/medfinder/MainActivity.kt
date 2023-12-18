@@ -41,7 +41,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                  val marsViewModel: MedsViewModel = viewModel()
+                    val marsViewModel: MedsViewModel = viewModel()
                     HomeScreen(medsUiState = marsViewModel.medsUiState)
                 }
             }

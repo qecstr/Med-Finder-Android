@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">medFinder</string>
+    <string name="busket">Каталог</string>
+    <string name="busket_item1">Аспирин</string>
+    <string name="busket_item2">Немесил</string>
+    <string name="busket_item3">Парацетомол</string>
+    <string name="busket_item4">Нафазолин</string>
+    <string name="image_desc">Асппирин</string>
 </resources>
