@@ -16,4 +16,26 @@
     <string name="busket_item3">Парацетомол</string>
     <string name="busket_item4">Нафазолин</string>
     <string name="image_desc">Асппирин</string>
+
+    <string name="label_1">*Имя</string>
+    <string name="label_2">*Номер телефона</string>
+    <string name="label_3">*Город</string>
+    <string name="label_4">*Улица</string>
+    <string name="label_5">*Дом</string>
+    <string name="label_6">Квартира</string>
+    <string name="label_7">Этаж</string>
+    <string name="label_8">Дополнительные сведения для упрощения доставки</string>
+    <string name="label_9">*Выберите дату</string>
+    <string name="checkbox_1">Самовывоз - бесплатно</string>
+    <string name="checkbox_2">В пределах стандартного квадрата - 1500 тг
+(пр. Достык - пр. Аль-Фараби - ул. Мамышулы - пр. Рыскулова)</string>
+    <string name="checkbox_3">Срочная доставка - 2500 тг</string>
+    <string name="checkbox_4">Доставка почтой - от 2500 тг (Расчитывается индивидуально)</string>
+    <string name="title_block1">Контактные данные</string>
+    <string name="title_block2">Адрес доставки</string>
+    <string name="title_block3">Способ доставки</string>
+    <string name="title_block4">Выберете удобное время</string>
+    <string name="checkbox_5">14:00 - 17:00</string>
+    <string name="checkbox_6">17:00 - 20:00</string>
+    <string name="checkbox_7">20:00 - 23:00</string>
 </resources>
