@@ -2,14 +2,12 @@ package com.example.medfinder.ui.Screens
 
 
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.medfinder.model.Meds
-import com.example.medfinder.network.DefaultAppContainer
 import com.example.medfinder.network.MedsApi
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -17,7 +15,7 @@ import java.io.IOException
 private val KEY = "AIzaSyAsXkF_dIpWcaVhoiZUtxth6tzjU9pSuPQ"
 private val spreadSheetID = "1VEA_bLxt76K2t3b_fnXqcQcAlIGtKpbFUzhs4OkmMy4"
 sealed interface MedsUiState {
-    data class Success(val meds:ArrayList<Meds>) : MedsUiState
+    data class Success(val meds: List<Meds>) : MedsUiState
     object Error : MedsUiState
     object Loading :MedsUiState
 }
@@ -38,18 +36,18 @@ class MedsViewModel : ViewModel() {
             var q = ArrayList<Meds>()
 
             for (items in listResult) {
-                items.map { m ->
+
                    q.add( Meds(
-                        MedName = m,
-                        MedPrice = m,
-                        MedApteka = m,
-                        MedAddress = m,
-                        MedRecept = m,
-                        MedAnalogue = m,
-                        MedCategory = m,
-                        MedId = m,
+                        MedName = items[0],
+                        MedPrice = items[1],
+                        MedApteka = items[2],
+                        MedAddress = items[3],
+                        MedRecept = items[4],
+                        MedAnalogue = items[5],
+                        MedCategory = items[6],
+                        MedId = items[7],
                     ))
-                }
+
             }
             medsUiState = try {
                 MedsUiState.Success(q)

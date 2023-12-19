@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">medFinder</string>
+    <string name="Med_name">Азитро капсулы 250 мг № 6</string>
+    <string name="Med_Price">2 480 тг.</string>
+    <string name="Med_Apteka">Аптека "Гиппократ"</string>
+    <string name="Med_Address">Астана, пр. Республики, 46</string>
+    <string name="Med_Recept">По рецепту</string>
+    <string name="Med_analogue">Азелтин суспензия 200 мг/5 мл 12,56 гр/15 мл</string>
+    <string name="Med_Category">Антибиотики</string>
+
+
 </resources>
