@@ -1,6 +1,7 @@
 package com.example.medfinder
 
 
+import android.annotation.SuppressLint
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -8,10 +9,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,11 +24,11 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -41,11 +40,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.medfinder.datas.DataSource
+import com.example.medfinder.model.Meds
 import com.example.medfinder.ui.BusketOrderScreen
-import com.example.medfinder.ui.HomeScreen
 import com.example.medfinder.ui.OrderViewModel
 import com.example.medfinder.ui.Screens.AppBar
-import com.example.medfinder.ui.Screens.MedsUiState
 import com.example.medfinder.ui.Screens.NavItems
 import com.example.medfinder.ui.currentMedViewModel
 import kotlinx.coroutines.launch
@@ -77,10 +75,11 @@ fun MedFinderAppBar(
     )
 }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MenuBar(
-    medsUiState: MedsUiState,
+    meds:List<Meds>,
     modifier: Modifier,
     navController: NavHostController = rememberNavController(),
     viewModel: currentMedViewModel = viewModel()
@@ -91,6 +90,13 @@ fun MenuBar(
     val backStackEntry by navController.currentBackStackEntryAsState()
     val selectedItem = remember { mutableStateOf(items[0]) }
     val order:OrderViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    var text by remember { mutableStateOf("") }
+    var active by remember {
+        mutableStateOf(false)
+    }
+    var searchedItems = remember {
+        mutableListOf("")
+    }
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -125,26 +131,16 @@ fun MenuBar(
                 }
             )
 
-            },
-            floatingActionButton = {
-                ExtendedFloatingActionButton(
-                    text = { Text("Наверх") },
-                    icon = { Icon(Icons.Filled.KeyboardArrowUp, contentDescription = "") },
-                    onClick = {
-
-                    }
-                )
             }
-        ){
-                innerPadding ->
-            val uiState by viewModel.uiState.collectAsState()
+        ){innerPadding ->
+            //val uiState by viewModel.uiState.collectAsState()
             NavHost(
                 navController = navController,
                 startDestination = MedFinderScreen.Catalog.name,
                 modifier = Modifier.padding(innerPadding)
             ) {
                 composable(route = MedFinderScreen.Catalog.name) {
-                    HomeScreen(medsUiState = medsUiState,modifier = Modifier,onCardClick = { viewModel.setMeds(it);navController.navigate(MedFinderScreen.MedItem.name)})
+                   MedFinder(meds = meds, modifier = Modifier,onCardClick = { viewModel.setMeds(it);navController.navigate(MedFinderScreen.MedItem.name)})
                 }
                 composable(route = MedFinderScreen.MedItem.name ) {
                     Med(meds = viewModel.getMeds())
@@ -160,6 +156,9 @@ fun MenuBar(
                         onSendButtonClicked = {},
                         modifier = Modifier.fillMaxHeight()
                     )
+                }
+                composable(route = MedFinderScreen.Search.name) {
+                    MedFinder(meds = search(meds,text), modifier = Modifier,onCardClick = { viewModel.setMeds(it);navController.navigate(MedFinderScreen.MedItem.name)})
                 }
             }
         }
@@ -221,9 +220,11 @@ fun MedFinderApp (
 }
 
 
+
 enum class MedFinderScreen(@StringRes val title: Int) {
     Catalog(title = 1),
     MedItem(title = 2),
     Pickup(title = 3),
-    Summary(title = 4)
+    Summary(title = 4),
+    Search(title = 5)
 }

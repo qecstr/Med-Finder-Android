@@ -14,6 +14,7 @@ object DefaultDataq
             MedRecept = R.string.Med_Recept.toString(),
             MedAnalogue = R.string.Med_analogue.toString(),
             MedId =" 1",
+            MedCategory = "Антибиотики",
             MedImage = null
 
         ),
@@ -25,6 +26,7 @@ object DefaultDataq
             MedRecept = R.string.Med_Recept.toString(),
             MedAnalogue = R.string.Med_analogue.toString(),
             MedId = "2",
+            MedCategory = "Антибиотики",
             MedImage = null
         ),
         Meds(
@@ -35,6 +37,7 @@ object DefaultDataq
             MedRecept = R.string.Med_Recept.toString(),
             MedAnalogue = R.string.Med_analogue.toString(),
             MedId = "3",
+            MedCategory = "Антибиотики",
             MedImage = null
         ),
         Meds(
@@ -45,6 +48,8 @@ object DefaultDataq
             MedRecept = R.string.Med_Recept.toString(),
             MedAnalogue = R.string.Med_analogue.toString(),
             MedId = "4",
+            MedCategory = "Антибиотики",
+
             MedImage = null
         )
     )

@@ -12,14 +12,14 @@ data class MedObject (
     @SerializedName("values"         ) var values         : ArrayList<ArrayList<String>> = arrayListOf()
 )
 data class Meds(
-    @SerializedName("Med_Name"     ) var MedName:  String? = null,
-    @SerializedName("Med_Price"    ) var MedPrice: String? = null,
-    @SerializedName("Med_Apteka"   ) var MedApteka: String? = null,
-    @SerializedName("Med_Address"  ) var MedAddress: String? = null,
-    @SerializedName("Med_Recept"   ) var MedRecept: String? = null,
-    @SerializedName("Med_analogue" ) var MedAnalogue: String? = null,
-    @SerializedName("Med_Category" ) var MedCategory: String? = null,
-    @SerializedName("Med_Id"       ) var MedId: String? = null,
+    @SerializedName("Med_Name"     ) var MedName: String ,
+    @SerializedName("Med_Price"    ) var MedPrice: String,
+    @SerializedName("Med_Apteka"   ) var MedApteka: String,
+    @SerializedName("Med_Address"  ) var MedAddress: String,
+    @SerializedName("Med_Recept"   ) var MedRecept: String,
+    @SerializedName("Med_analogue" ) var MedAnalogue: String,
+    @SerializedName("Med_Category" ) var MedCategory: String,
+    @SerializedName("Med_Id"       ) var MedId: String,
     @SerializedName("Med_Image")      var MedImage: String? = null
 )
 

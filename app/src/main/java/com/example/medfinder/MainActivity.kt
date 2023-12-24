@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,13 +17,19 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.medfinder.model.Meds
+import com.example.medfinder.ui.HomeScreen
 import com.example.medfinder.ui.Screens.MedsViewModel
 import com.example.medfinder.ui.theme.MedFinderTheme
 
@@ -56,8 +64,7 @@ class MainActivity : ComponentActivity() {
                     color = colorResource(id = R.color.back)
                 ) {
                     val marsViewModel: MedsViewModel = viewModel()
-
-                    MenuBar(medsUiState = marsViewModel.medsUiState, modifier = Modifier)
+                    HomeScreen(medsUiState = marsViewModel.medsUiState, modifier = Modifier)
                 }
             }
         }
@@ -148,27 +155,78 @@ fun MedItem(
 }
 
 }
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MedFinder(meds: List<Meds>, modifier: Modifier = Modifier, onCardClick:(Meds) -> Unit = {}) {
+    var temp by remember { mutableStateOf(meds) }
 
-    var currentScreen by remember { mutableStateOf("catalog") }
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(1),
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        items(10){item ->
-            MedItem(meds = meds[item], modifier =modifier ,onCardClick = onCardClick)
+    var text by remember { mutableStateOf("") }
+    var active by remember {
+        mutableStateOf(false)
+    }
+    var searchedItems = remember {
+        mutableListOf("")
+    }
+      Column() {
+        SearchBar(
+            modifier = Modifier.fillMaxWidth(),
+            query = text,
+            onQueryChange = { text = it },
+            onSearch = {
+                searchedItems.add(text)
+                active = false
+                temp = search(meds, text)
+                text = ""
+            },
+            active = active,
+            onActiveChange = { active = it },
+            placeholder = { Text(text = "Поиск") },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Search Icon"
+                )
+            },
+            trailingIcon = {
+                if (active) {
+                    Icon(
+                        modifier = Modifier.clickable { text = "" },
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Close Icon"
+                    )
+
+                } else {
+                  active = false
+                }
+            },
+        ) {
 
         }
-        }
+          LazyVerticalGrid(
+              columns = GridCells.Fixed(1),
+              modifier = modifier,
+              verticalArrangement = Arrangement.spacedBy(8.dp),
+              horizontalArrangement = Arrangement.spacedBy(8.dp),
+          ) {
+              items(temp){med ->
+                  MedItem(meds =med, modifier = modifier, onCardClick = onCardClick)
+              }
+
+          }
+
     }
 
 
-
-
+}
+fun search(meds:List<Meds>,text:String):List<Meds>{
+  var q  = mutableListOf<Meds>()
+        for(items in meds){
+            if(items.MedName.contains(text)){
+                q.add(items)
+            }
+        }
+    return q
+}
 
 
 @Composable
