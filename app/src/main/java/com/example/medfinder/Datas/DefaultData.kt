@@ -1,9 +1,9 @@
-package com.example.medfinder.Data
+package com.example.medfinder.Datas
 
 import com.example.medfinder.R
 import com.example.medfinder.model.Meds
 
-object DefaultData
+object DefaultDataq
 {
     val q = listOf(
         Meds(

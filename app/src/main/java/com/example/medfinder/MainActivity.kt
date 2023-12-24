@@ -1,59 +1,34 @@
 package com.example.medfinder
 
 
-import androidx.compose.foundation.Image
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.clickable
-
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-
 import androidx.compose.foundation.layout.Spacer
-
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.NavigationDrawerItemDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,26 +37,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-
-import com.example.medfinder.model.Meds
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import com.example.medfinder.Data.DefaultData
-import com.example.medfinder.model.MenuItem
-import com.example.medfinder.ui.HomeScreen
-import com.example.medfinder.ui.Screens.AppBar
-
-
-import com.example.medfinder.ui.Screens.MedsUiState
+import com.example.medfinder.model.Meds
 import com.example.medfinder.ui.Screens.MedsViewModel
-import com.example.medfinder.ui.Screens.NavItems
 import com.example.medfinder.ui.theme.MedFinderTheme
-import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -110,8 +72,10 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MedItem(
    meds: Meds,
-   modifier: Modifier
+   modifier: Modifier,
+   onCardClick:(Meds) -> Unit = {}
 ){
+
     Card(
         modifier = Modifier
             .padding(16.dp, 16.dp, 16.dp, 0.dp)
@@ -123,7 +87,7 @@ fun MedItem(
         colors = CardDefaults.cardColors(
             containerColor = colorResource(id = R.color.border),
         ),
-        onClick = {}
+        onClick = { onCardClick(meds)}
     ){
     Row (verticalAlignment = Alignment.CenterVertically){
         Box {
@@ -186,7 +150,7 @@ fun MedItem(
 }
 
 @Composable
-fun MedFinder(meds: List<Meds>, modifier: Modifier = Modifier) {
+fun MedFinder(meds: List<Meds>, modifier: Modifier = Modifier, onCardClick:(Meds) -> Unit = {}) {
 
     var currentScreen by remember { mutableStateOf("catalog") }
     LazyVerticalGrid(
@@ -196,7 +160,7 @@ fun MedFinder(meds: List<Meds>, modifier: Modifier = Modifier) {
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         items(10){item ->
-            MedItem(meds = meds[item], modifier =modifier )
+            MedItem(meds = meds[item], modifier =modifier ,onCardClick = onCardClick)
 
         }
         }
@@ -266,50 +230,6 @@ fun Med(meds:Meds, modiier:Modifier = Modifier){
 }
 
 
-@Composable
-fun DrawerHeader() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 64.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = "Header", fontSize = 60.sp)
-    }
-}
-
-@Composable
-fun DrawerBody(
-    items: List<MenuItem>,
-    modifier: Modifier = Modifier,
-    itemTextStyle: TextStyle = TextStyle(fontSize = 18.sp),
-    onItemClick: (MenuItem) -> Unit
-) {
-    LazyColumn(modifier) {
-        items(items) { item ->
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        onItemClick(item)
-                    }
-                    .padding(16.dp)
-            ) {
-                Icon(
-                    imageVector = item.icon,
-                    contentDescription = item.contentDescription
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                Text(
-                    text = item.title,
-                    style = itemTextStyle,
-                    modifier = Modifier.weight(1f)
-                )
-            }
-        }
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
 fun MedFinderPreview() {
@@ -317,7 +237,7 @@ fun MedFinderPreview() {
 
         //MedFinder(meds = DefaultData.q)
        // Med(meds = DefaultData.q[0])
-        val a = MedsUiState.Success(DefaultData.q)
-        MenuBar(medsUiState = a, modifier = Modifier)
+       /* val a = MedsUiState.Success(DefaultData.q)
+        MenuBar(medsUiState = a, modifier = Modifier)*/
     }
 }

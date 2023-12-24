@@ -1,5 +1,6 @@
 package com.example.medfinder
 
+
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -24,6 +25,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,19 +34,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.cupcake.ui.SummaryScreen
-import com.example.medfinder.data.DataSource
+import com.example.medfinder.datas.DataSource
 import com.example.medfinder.ui.BusketOrderScreen
 import com.example.medfinder.ui.HomeScreen
 import com.example.medfinder.ui.OrderViewModel
 import com.example.medfinder.ui.Screens.AppBar
 import com.example.medfinder.ui.Screens.MedsUiState
 import com.example.medfinder.ui.Screens.NavItems
+import com.example.medfinder.ui.currentMedViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -76,11 +79,18 @@ fun MedFinderAppBar(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MenuBar(medsUiState: MedsUiState, modifier: Modifier){
+fun MenuBar(
+    medsUiState: MedsUiState,
+    modifier: Modifier,
+    navController: NavHostController = rememberNavController(),
+    viewModel: currentMedViewModel = viewModel()
+    ){
     val drawerState =  rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val items = NavItems.items
+    val backStackEntry by navController.currentBackStackEntryAsState()
     val selectedItem = remember { mutableStateOf(items[0]) }
+    val order:OrderViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -93,7 +103,7 @@ fun MenuBar(medsUiState: MedsUiState, modifier: Modifier){
                         selected = item == selectedItem.value,
                         onClick = {
                             scope.launch { drawerState.close() }
-
+                            navController.navigate(item.title)
                         },
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )
@@ -126,20 +136,45 @@ fun MenuBar(medsUiState: MedsUiState, modifier: Modifier){
                 )
             }
         ){
-            HomeScreen(medsUiState = medsUiState,modifier = Modifier, contentPadding = it)
+                innerPadding ->
+            val uiState by viewModel.uiState.collectAsState()
+            NavHost(
+                navController = navController,
+                startDestination = MedFinderScreen.Catalog.name,
+                modifier = Modifier.padding(innerPadding)
+            ) {
+                composable(route = MedFinderScreen.Catalog.name) {
+                    HomeScreen(medsUiState = medsUiState,modifier = Modifier,onCardClick = { viewModel.setMeds(it);navController.navigate(MedFinderScreen.MedItem.name)})
+                }
+                composable(route = MedFinderScreen.MedItem.name ) {
+                    Med(meds = viewModel.getMeds())
 
+                }
+                composable(route = MedFinderScreen.Pickup.name) {
+
+                }
+                composable(route = MedFinderScreen.Summary.name) {
+                    val context = LocalContext.current
+                    SummaryScreen(
+                        onCancelButtonClicked = {},
+                        onSendButtonClicked = {},
+                        modifier = Modifier.fillMaxHeight()
+                    )
+                }
+            }
         }
     }
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MedFinderApp (
     navController: NavHostController = rememberNavController()
 ){
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentScreen = MedFinderScreen.valueOf(
-        backStackEntry?.destination?.route ?: MedFinderScreen.Start.name
+        backStackEntry?.destination?.route ?: MedFinderScreen.Catalog.name
     )
 
     Scaffold(
@@ -154,19 +189,20 @@ fun MedFinderApp (
 
         NavHost(
             navController = navController,
-            startDestination = MedFinderScreen.Start.name,
+            startDestination = MedFinderScreen.Catalog.name,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(route = MedFinderScreen.Start.name) {
+            composable(route = MedFinderScreen.Catalog.name) {
                 BusketOrderScreen(
                     quantityOptions = DataSource.quantityOptions,
                     onNextButtonClicked = {
-                        navController.navigate(MedFinderScreen.Flavor.name)
+                        navController.navigate(MedFinderScreen.MedItem.name)
                     },
                     modifier = Modifier.fillMaxHeight()
                 )
             }
-            composable(route = MedFinderScreen.Flavor.name) {
+            composable(route = MedFinderScreen.MedItem.name) {
+
 
             }
             composable(route = MedFinderScreen.Pickup.name) {
@@ -186,8 +222,8 @@ fun MedFinderApp (
 
 
 enum class MedFinderScreen(@StringRes val title: Int) {
-    Start(title = R.string.app_name),
-    Flavor(title = R.string.app_name),
-    Pickup(title = R.string.app_name),
-    Summary(title = R.string.app_name)
+    Catalog(title = 1),
+    MedItem(title = 2),
+    Pickup(title = 3),
+    Summary(title = 4)
 }
