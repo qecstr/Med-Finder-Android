@@ -40,6 +40,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -65,9 +66,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.cupcake.R
-import com.example.cupcake.data.OrderUiState
-import com.example.cupcake.ui.components.FormattedPriceLabel
+import com.example.medfinder.R
+import com.example.medfinder.ui.BusketSubmit
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -79,16 +79,15 @@ import java.util.Locale
  * lambda
  */
 @Composable
-fun OrderSummaryScreen(
-    orderUiState: OrderUiState,
+fun SummaryScreen(
     onCancelButtonClicked: () -> Unit,
-    onSendButtonClicked: (String, String) -> Unit,
+    onSendButtonClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.verticalScroll(rememberScrollState())) {
-//        ContactsBlock()
-//        AdressBlock()
-//        DeliveryVariant()
+        ContactsBlock()
+        AdressBlock()
+        DeliveryVariant()
         TimeBlock()
         Row(modifier = Modifier.padding(10.dp)) {
             BusketSubmit()
@@ -157,6 +156,7 @@ fun TimeBlock() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun showDatePicker() {
     val calendar = Calendar.getInstance()
@@ -480,6 +480,7 @@ fun BlockTitle(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditField(
     @StringRes label: Int,
@@ -504,6 +505,7 @@ fun EditField(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditBigField(
     @StringRes label: Int,
@@ -531,9 +533,8 @@ fun EditBigField(
 @Preview
 @Composable
 fun OrderSummaryPreview(){
-    OrderSummaryScreen(
-        orderUiState = OrderUiState(0, "Test", "Test", "$300.00"),
-        onSendButtonClicked = { subject: String, summary: String -> },
+    SummaryScreen(
+        onSendButtonClicked = {},
         onCancelButtonClicked = {},
         modifier = Modifier.fillMaxHeight()
     )
