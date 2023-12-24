@@ -13,15 +13,15 @@ class OrderViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(OrderUiState(DefaultDataq.q))
     val uiState: StateFlow<OrderUiState> = _uiState.asStateFlow()
     private var busket = mutableListOf<Meds>()
-    private fun addBusket(meds: Meds) {
+    fun addBusket(meds: Meds) {
 
         busket.add(meds)
 
     }
-    private fun getBusket():List<Meds>{
+    fun getBusket():List<Meds>{
         return busket
     }
-    private fun clearBusket(){
+    fun clearBusket(){
         busket.clear()
 
     }

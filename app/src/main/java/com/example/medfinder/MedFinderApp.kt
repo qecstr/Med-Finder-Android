@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +26,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,8 +45,10 @@ import androidx.navigation.compose.rememberNavController
 import com.example.medfinder.datas.DataSource
 import com.example.medfinder.model.Meds
 import com.example.medfinder.ui.BusketOrderScreen
+import com.example.medfinder.ui.HomeScreen
 import com.example.medfinder.ui.OrderViewModel
 import com.example.medfinder.ui.Screens.AppBar
+import com.example.medfinder.ui.Screens.MedsUiState
 import com.example.medfinder.ui.Screens.NavItems
 import com.example.medfinder.ui.currentMedViewModel
 import kotlinx.coroutines.launch
@@ -82,21 +87,14 @@ fun MenuBar(
     meds:List<Meds>,
     modifier: Modifier,
     navController: NavHostController = rememberNavController(),
-    viewModel: currentMedViewModel = viewModel()
+    viewModel: currentMedViewModel = viewModel(),
+    orderViewModel: OrderViewModel = viewModel()
     ){
     val drawerState =  rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val items = NavItems.items
     val backStackEntry by navController.currentBackStackEntryAsState()
     val selectedItem = remember { mutableStateOf(items[0]) }
-    val order:OrderViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
-    var text by remember { mutableStateOf("") }
-    var active by remember {
-        mutableStateOf(false)
-    }
-    var searchedItems = remember {
-        mutableListOf("")
-    }
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -143,8 +141,20 @@ fun MenuBar(
                    MedFinder(meds = meds, modifier = Modifier,onCardClick = { viewModel.setMeds(it);navController.navigate(MedFinderScreen.MedItem.name)})
                 }
                 composable(route = MedFinderScreen.MedItem.name ) {
-                    Med(meds = viewModel.getMeds())
+                    Med(
+                        meds = viewModel.getMeds(),
+                        onAddButton = {
+                            orderViewModel.addBusket(it)
+                        }
+                    )
 
+                }
+                composable(route = MedFinderScreen.Busket.name) {
+                    BusketOrderScreen(
+                        quantityOptions = DataSource.quantityOptions,
+                        getBusket = orderViewModel.getBusket(),
+                        modifier = Modifier.fillMaxHeight()
+                    )
                 }
                 composable(route = MedFinderScreen.Pickup.name) {
 
@@ -157,67 +167,12 @@ fun MenuBar(
                         modifier = Modifier.fillMaxHeight()
                     )
                 }
-                composable(route = MedFinderScreen.Search.name) {
-                    MedFinder(meds = search(meds,text), modifier = Modifier,onCardClick = { viewModel.setMeds(it);navController.navigate(MedFinderScreen.MedItem.name)})
-                }
             }
         }
     }
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun MedFinderApp (
-    navController: NavHostController = rememberNavController()
-){
-    val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentScreen = MedFinderScreen.valueOf(
-        backStackEntry?.destination?.route ?: MedFinderScreen.Catalog.name
-    )
-
-    Scaffold(
-        topBar = {
-            MedFinderAppBar(
-                currentScreen = currentScreen,
-                canNavigateBack = navController.previousBackStackEntry != null,
-                navigateUp = { navController.navigateUp() }
-            )
-        }
-    ) { innerPadding ->
-
-        NavHost(
-            navController = navController,
-            startDestination = MedFinderScreen.Catalog.name,
-            modifier = Modifier.padding(innerPadding)
-        ) {
-            composable(route = MedFinderScreen.Catalog.name) {
-                BusketOrderScreen(
-                    quantityOptions = DataSource.quantityOptions,
-                    onNextButtonClicked = {
-                        navController.navigate(MedFinderScreen.MedItem.name)
-                    },
-                    modifier = Modifier.fillMaxHeight()
-                )
-            }
-            composable(route = MedFinderScreen.MedItem.name) {
-
-
-            }
-            composable(route = MedFinderScreen.Pickup.name) {
-
-            }
-            composable(route = MedFinderScreen.Summary.name) {
-                val context = LocalContext.current
-                SummaryScreen(
-                    onCancelButtonClicked = {},
-                    onSendButtonClicked = {},
-                    modifier = Modifier.fillMaxHeight()
-                )
-            }
-        }
-    }
-}
 
 
 

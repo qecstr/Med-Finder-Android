@@ -50,14 +50,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.medfinder.R
 import com.example.medfinder.datas.DataSource
+import com.example.medfinder.model.Meds
 
 
 @Composable
 fun BusketOrderScreen(
     quantityOptions: List<Pair<Int, Int>>,
-    onNextButtonClicked: (Int) -> Unit,
+    getBusket: List<Meds>,
     modifier: Modifier = Modifier.background(Color(0xFFF2F8FC))
 
 ){
@@ -88,10 +90,10 @@ fun BusketOrderScreen(
                     dimensionResource(id = R.dimen.padding_medium)
                 )
             ) {
-                quantityOptions.forEach { item ->
+                getBusket.forEach { item ->
                     SelectQuantityButton(
-                        labelResourceId = item.first,
-                        cost = item.second
+                        labelText = item.MedName!!,
+                        cost = item.MedPrice!!
                     )
                 }
             }
@@ -109,8 +111,8 @@ fun BusketOrderScreen(
 
 @Composable
 fun SelectQuantityButton(
-    @StringRes labelResourceId: Int,
-    cost: Int,
+    labelText: String,
+    cost: String,
     modifier: Modifier = Modifier
 ){
     Surface(
@@ -135,7 +137,7 @@ fun SelectQuantityButton(
                 )
                 Spacer(modifier = modifier.width(25.dp))
                 Text(
-                    stringResource(labelResourceId),
+                    text = labelText,
                     color = Color(0xFFFF9000),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
@@ -155,55 +157,7 @@ fun SelectQuantityButton(
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
-                Row() {
-                    TextButton(
-                        onClick = { /*TODO*/ },
-                        modifier = modifier
-                            .width(40.dp)
-                            .height(40.dp),
-                        shape = RoundedCornerShape(13.dp),
-                        colors = ButtonDefaults.textButtonColors(
-                            containerColor = Color(0xFF004B81),
-                            contentColor = Color.White
-                        )
-                    ) {
-                        Text("-")
-                    }
-                    Spacer(modifier = modifier.width(5.dp))
-                    Surface(
-                        shape = RoundedCornerShape(13.dp),
-                        color = Color.White,
-                        border = BorderStroke(1.dp, Color(0xFF004B81)),
-                        modifier = modifier
-                            .width(40.dp)
-                            .height(40.dp),
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .fillMaxHeight(),
-                            horizontalArrangement = Arrangement.SpaceAround,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text("1", color = Color(0xFF66AFE3))
-                        }
-                    }
-                    Spacer(modifier = modifier.width(5.dp))
 
-                    TextButton(
-                        onClick = { /*TODO*/ },
-                        modifier = modifier
-                            .width(40.dp)
-                            .height(40.dp),
-                        shape = RoundedCornerShape(13.dp),
-                        colors = ButtonDefaults.textButtonColors(
-                            containerColor = Color(0xFF004B81),
-                            contentColor = Color.White
-                        )
-                    ) {
-                        Text(text = "+")
-                    }
-                }
             }
 
         }
@@ -307,11 +261,13 @@ fun BusketSubmit(
 
 @Preview
 @Composable
-fun BusketOrderPreview(){
+fun BusketOrderPreview(
+    orderViewModel: OrderViewModel = viewModel()
+){
 
     BusketOrderScreen(
         quantityOptions = DataSource.quantityOptions,
-        onNextButtonClicked = {},
+        getBusket = orderViewModel.getBusket(),
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFF2F8FC))
