@@ -73,7 +73,7 @@ dependencies {
     /*implementation( "com.google.api-client:google-api-client:2.0.0")
     implementation(" com.google.oauth-client:google-oauth-client-jetty:1.34.1")
     implementation ("com.google.apis:google-api-services-sheets:v4-rev20220927-2.0.0")*/
-    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material3:material3:1.2.0-alpha05")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

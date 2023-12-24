@@ -60,7 +60,7 @@ import com.example.medfinder.data.DataSource
  * next screen
  */
 @Composable
-fun StartOrderScreen(
+fun BusketOrderScreen(
     quantityOptions: List<Pair<Int, Int>>,
     onNextButtonClicked: (Int) -> Unit,
     modifier: Modifier = Modifier.background(Color(0xFFF2F8FC))
@@ -315,9 +315,9 @@ fun BusketSubmit(
 
 @Preview
 @Composable
-fun StartOrderPreview(){
+fun BusketOrderPreview(){
 
-    StartOrderScreen(
+    BusketOrderScreen(
         quantityOptions = DataSource.quantityOptions,
         onNextButtonClicked = {},
         modifier = Modifier

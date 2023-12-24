@@ -73,6 +73,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.medfinder.Data.DefaultData
 import com.example.medfinder.model.MenuItem
+import com.example.medfinder.ui.HomeScreen
 import com.example.medfinder.ui.Screens.AppBar
 
 
@@ -92,7 +93,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = colorResource(id = R.color.back)
                 ) {
-                  val marsViewModel: MedsViewModel = viewModel()
+                    val marsViewModel: MedsViewModel = viewModel()
 
                     MenuBar(medsUiState = marsViewModel.medsUiState, modifier = Modifier)
                 }
@@ -100,6 +101,9 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -180,6 +184,7 @@ fun MedItem(
 }
 
 }
+
 @Composable
 fun MedFinder(meds: List<Meds>, modifier: Modifier = Modifier) {
 
@@ -196,35 +201,11 @@ fun MedFinder(meds: List<Meds>, modifier: Modifier = Modifier) {
         }
         }
     }
-@Composable
-fun HomeScreen(
-  medsUiState: MedsUiState, modifier: Modifier = Modifier,contentPadding: PaddingValues = PaddingValues(0.dp)
-) { when (medsUiState) {
-    is MedsUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxSize())
-    is MedsUiState.Success -> MedFinder(
-    medsUiState.meds, modifier = modifier.fillMaxWidth()
-    )
 
-    is MedsUiState.Error -> ErrorScreen(  modifier = modifier.fillMaxSize())
-}}
-@Composable
-fun ResultScreen(meds: ArrayList<Meds>, modifier: Modifier = Modifier) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier
-    ) {
-        Text(text = meds[0].MedName.toString())
-    }
-}
-@Composable
-fun LoadingScreen(modifier: Modifier = Modifier) {
-    Text(text = "loading")
-}
-@Composable
-fun ErrorScreen(modifier: Modifier = Modifier) {
 
-        Text(text =" errro")
-    }
+
+
+
 
 @Composable
 fun Med(meds:Meds, modiier:Modifier = Modifier){
@@ -283,63 +264,8 @@ fun Med(meds:Meds, modiier:Modifier = Modifier){
         }
     }
 }
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun MenuBar(medsUiState:MedsUiState, modifier: Modifier){
-    val drawerState =  rememberDrawerState(initialValue = DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
-    val items = NavItems.items
-    val selectedItem = remember { mutableStateOf(items[0]) }
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            ModalDrawerSheet {
-                Spacer(Modifier.height(12.dp))
-                items.forEach { item ->
-                    NavigationDrawerItem(
-                        icon = { item.icon },
-                        label = { Text(item.title) },
-                        selected = item == selectedItem.value,
-                        onClick = {
-                            scope.launch { drawerState.close() }
-
-                        },
-                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-                    )
-                }
-            }
-        }
 
 
-    ) {
-
-        Scaffold (
-            topBar = {  AppBar(
-                    onNavigationIconClick = {
-                        scope.launch {
-                            drawerState.apply {
-                                if (isClosed) open() else close()
-                            }
-                        }
-                    }
-                    )
-
-            },
-            floatingActionButton = {
-                ExtendedFloatingActionButton(
-                    text = { Text("Наверх") },
-                    icon = { Icon(Icons.Filled.KeyboardArrowUp, contentDescription = "") },
-                    onClick = {
-
-                    }
-                )
-            }
-        ){
-            HomeScreen(medsUiState = medsUiState,modifier = Modifier, contentPadding = it)
-
-        }
-    }
-}
 @Composable
 fun DrawerHeader() {
     Box(
