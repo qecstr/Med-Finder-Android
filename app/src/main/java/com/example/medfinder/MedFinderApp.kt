@@ -80,17 +80,17 @@ fun MedFinderAppBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MenuBar(
-    medsUiState: MedsUiState,
-    modifier: Modifier,
-    navController: NavHostController = rememberNavController(),
-    viewModel: currentMedViewModel = viewModel()
+        medsUiState: MedsUiState,
+        modifier: Modifier,
+        navController: NavHostController = rememberNavController(),
+        viewModel: currentMedViewModel = viewModel(),
+        orderViewModel: OrderViewModel = viewModel()
     ){
     val drawerState =  rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val items = NavItems.items
     val backStackEntry by navController.currentBackStackEntryAsState()
     val selectedItem = remember { mutableStateOf(items[0]) }
-    val order:OrderViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -147,8 +147,20 @@ fun MenuBar(
                     HomeScreen(medsUiState = medsUiState,modifier = Modifier,onCardClick = { viewModel.setMeds(it);navController.navigate(MedFinderScreen.MedItem.name)})
                 }
                 composable(route = MedFinderScreen.MedItem.name ) {
-                    Med(meds = viewModel.getMeds())
+                    Med(
+                        meds = viewModel.getMeds(),
+                        onAddButton = {
+                            orderViewModel.addBusket(it)
+                        }
+                    )
 
+                }
+                composable(route = MedFinderScreen.Busket.name) {
+                    BusketOrderScreen(
+                        quantityOptions = DataSource.quantityOptions,
+                        getBusket = orderViewModel.getBusket(),
+                        modifier = Modifier.fillMaxHeight()
+                    )
                 }
                 composable(route = MedFinderScreen.Pickup.name) {
 
@@ -192,15 +204,7 @@ fun MedFinderApp (
             startDestination = MedFinderScreen.Catalog.name,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(route = MedFinderScreen.Catalog.name) {
-                BusketOrderScreen(
-                    quantityOptions = DataSource.quantityOptions,
-                    onNextButtonClicked = {
-                        navController.navigate(MedFinderScreen.MedItem.name)
-                    },
-                    modifier = Modifier.fillMaxHeight()
-                )
-            }
+
             composable(route = MedFinderScreen.MedItem.name) {
 
 
@@ -225,5 +229,6 @@ enum class MedFinderScreen(@StringRes val title: Int) {
     Catalog(title = 1),
     MedItem(title = 2),
     Pickup(title = 3),
-    Summary(title = 4)
+    Summary(title = 4),
+    Busket(title = 5)
 }

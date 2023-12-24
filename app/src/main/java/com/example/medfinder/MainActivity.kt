@@ -76,6 +76,7 @@ fun MedItem(
    onCardClick:(Meds) -> Unit = {}
 ){
 
+
     Card(
         modifier = Modifier
             .padding(16.dp, 16.dp, 16.dp, 0.dp)
@@ -172,7 +173,11 @@ fun MedFinder(meds: List<Meds>, modifier: Modifier = Modifier, onCardClick:(Meds
 
 
 @Composable
-fun Med(meds:Meds, modiier:Modifier = Modifier){
+fun Med(
+    meds:Meds,
+    modiier:Modifier = Modifier,
+    onAddButton: (Meds) -> Unit = {}
+){
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize()
@@ -188,7 +193,7 @@ fun Med(meds:Meds, modiier:Modifier = Modifier){
 
         Spacer(modifier = Modifier.height(16.dp))
         Button(
-            onClick = { /*TODO*/ },
+            onClick = { onAddButton(meds) },
             colors = ButtonDefaults.buttonColors(
                 colorResource(id = R.color.button)
             )
