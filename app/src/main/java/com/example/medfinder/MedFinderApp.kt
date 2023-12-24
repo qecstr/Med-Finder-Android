@@ -167,9 +167,6 @@ fun MenuBar(
 }
 
 
-
-
-
 enum class MedFinderScreen(@StringRes val title: Int) {
     Catalog(title = 1),
     MedItem(title = 2),
